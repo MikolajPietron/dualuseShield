@@ -265,7 +265,7 @@ function PovOverlay({ scenario }: { scenario: ReconScenario }) {
       {/* CV banner — centered in the map gap */}
       <div
         className="absolute top-[84px] pointer-events-none"
-        style={{ left: "360px", right: "400px" }}
+        style={{ left: "396px", right: "400px" }}
       >
         <div className="flex justify-center">
           <div
@@ -336,7 +336,7 @@ function DataCard({ scenario, elapsed }: { scenario: ReconScenario; elapsed: num
 
   return (
     <div
-      className="pointer-events-auto absolute top-[80px] left-4 bottom-10 w-[320px] max-w-[26vw] bg-[rgba(12,6,6,0.96)] backdrop-blur-md border border-[#3a1818] shadow-2xl flex flex-col overflow-hidden animate-slideIn"
+      className="pointer-events-auto absolute top-[80px] left-0 bottom-10 w-[380px] max-w-[30vw] bg-[rgba(12,6,6,0.96)] backdrop-blur-md border-r border-t border-b border-[#3a1818] shadow-2xl flex flex-col overflow-hidden animate-slideIn"
       style={{ borderRadius: "2px" }}
     >
       {/* Header */}

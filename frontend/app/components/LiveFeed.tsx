@@ -92,6 +92,81 @@ export function LiveFeed({ scenarioId }: LiveFeedProps) {
     dualuse: "DRON POLICJI • RF + EO/IR",
   };
 
+  // For mapping scenario, use real YouTube factory drone footage
+  if (scenarioId === "mapa") {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-black">
+        <div className="absolute inset-0">
+          <iframe
+            src="https://www.youtube.com/embed/7wE-Bs5qtDc?autoplay=1&mute=1&loop=1&playlist=7wE-Bs5qtDc&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&start=2"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ width: "200%", height: "200%", border: "none" }}
+            allow="autoplay; encrypted-media"
+            allowFullScreen={false}
+          />
+        </div>
+
+        {/* Green night-vision tint */}
+        <div className="absolute inset-0 pointer-events-none z-[2]" style={{
+          background: "linear-gradient(180deg, rgba(0,15,0,0.1) 0%, transparent 30%, transparent 70%, rgba(0,15,0,0.1) 100%)",
+        }} />
+
+        {/* Scan lines */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.07) 0px, transparent 1px, transparent 3px)",
+          backgroundSize: "100% 3px",
+        }} />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%)",
+        }} />
+
+        {/* Corner ticks */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" preserveAspectRatio="none">
+          <line x1="3%" y1="3%" x2="8%" y2="3%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="3%" y1="3%" x2="3%" y2="8%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="92%" y1="3%" x2="97%" y2="3%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="97%" y1="3%" x2="97%" y2="8%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="3%" y2="92%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="8%" y2="97%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="97%" y1="97%" x2="97%" y2="92%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+          <line x1="92%" y1="97%" x2="97%" y2="97%" stroke="rgba(0,200,100,0.5)" strokeWidth="1.5" />
+        </svg>
+
+        {/* LIDAR scan info top-right */}
+        <div className="absolute top-8 right-3 z-[5] pointer-events-none text-right">
+          <div className="text-[7px] font-mono text-cyan-400/70 mb-0.5">LIDAR + RGB-4K</div>
+          <div className="text-[9px] font-mono text-emerald-400 font-bold">SKAN: AKTYWNY</div>
+          <div className="text-[7px] font-mono text-cyan-300/50">RES: 2.4 cm/px</div>
+          <div className="text-[7px] font-mono text-cyan-300/50">ALT: 120m AGL</div>
+        </div>
+
+        {/* Scan grid overlay */}
+        <div className="absolute inset-0 pointer-events-none z-[4]" style={{
+          backgroundImage: "linear-gradient(rgba(0,200,100,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,100,0.04) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }} />
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-1.5 bg-black/70 backdrop-blur-sm border-b border-red-900/50 z-10">
+          <div className="flex items-center gap-2">
+            <Video className="w-3 h-3 text-red-500" />
+            <span className="text-[9px] font-rajdhani font-bold tracking-widest text-red-400">LIVE FEED</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Signal className="w-3 h-3 text-green-400" />
+            <span className="text-[8px] font-mono text-slate-400">{feedLabels[scenarioId]}</span>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-black/70 backdrop-blur-sm border-t border-red-900/50 z-10">
+          <LiveTimestamp />
+        </div>
+      </div>
+    );
+  }
+
   // For police chase, use real YouTube drone footage
   if (scenarioId === "procedury") {
     return (
@@ -172,6 +247,173 @@ export function LiveFeed({ scenarioId }: LiveFeedProps) {
           </div>
         </div>
         {/* Bottom info bar */}
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-black/70 backdrop-blur-sm border-t border-red-900/50 z-10">
+          <LiveTimestamp />
+        </div>
+      </div>
+    );
+  }
+
+  // For hybrid/dual-use scenario, use counter-drone ops footage
+  if (scenarioId === "dualuse") {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-black">
+        <div className="absolute inset-0">
+          <iframe
+            src="https://www.youtube.com/embed/VrWM_pU8zOQ?autoplay=1&mute=1&loop=1&playlist=VrWM_pU8zOQ&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&start=5"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ width: "200%", height: "200%", border: "none" }}
+            allow="autoplay; encrypted-media"
+            allowFullScreen={false}
+          />
+        </div>
+
+        {/* Tactical green tint */}
+        <div className="absolute inset-0 pointer-events-none z-[2]" style={{
+          background: "linear-gradient(180deg, rgba(0,10,0,0.12) 0%, transparent 35%, transparent 65%, rgba(0,10,0,0.12) 100%)",
+        }} />
+
+        {/* Scan lines */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, transparent 1px, transparent 3px)",
+          backgroundSize: "100% 3px",
+        }} />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.55) 100%)",
+        }} />
+
+        {/* Corner ticks */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" preserveAspectRatio="none">
+          <line x1="3%" y1="3%" x2="8%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="3%" x2="3%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="3%" x2="97%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="3%" x2="97%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="3%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="8%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="97%" x2="97%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="97%" x2="97%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+        </svg>
+
+        {/* RF detection box */}
+        <div className="absolute z-[4] pointer-events-none" style={{ top: "30%", left: "35%", width: "30%", height: "35%" }}>
+          <div className="w-full h-full border border-amber-500/60 animate-pulse" style={{ boxShadow: "0 0 10px rgba(245,158,11,0.3)" }}>
+            <div className="absolute -top-3.5 left-0 text-[7px] font-mono text-amber-400 font-bold">
+              ⚠ INTRUDER UAV • RF LOCK
+            </div>
+            <div className="absolute -bottom-3.5 left-0 text-[6px] font-mono text-amber-300/70">
+              DJI PHANTOM 4 • 2.4GHz
+            </div>
+            <div className="absolute -bottom-3.5 right-0 text-[6px] font-mono text-red-400/70">
+              THREAT: HIGH
+            </div>
+          </div>
+        </div>
+
+        {/* RF/EO readout top-right */}
+        <div className="absolute top-8 right-3 z-[5] pointer-events-none text-right">
+          <div className="text-[7px] font-mono text-amber-400/70 mb-0.5">RF SCAN + EO/IR</div>
+          <div className="text-[9px] font-mono text-amber-400 font-bold">RF: 2.4GHz LOCKED</div>
+          <div className="text-[7px] font-mono text-red-400/60">C-UAS: AKTYWNY</div>
+          <div className="text-[7px] font-mono text-cyan-300/50">3. BRYGADA OT: POWIAD.</div>
+        </div>
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-1.5 bg-black/70 backdrop-blur-sm border-b border-red-900/50 z-10">
+          <div className="flex items-center gap-2">
+            <Video className="w-3 h-3 text-red-500" />
+            <span className="text-[9px] font-rajdhani font-bold tracking-widest text-red-400">LIVE FEED</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Signal className="w-3 h-3 text-green-400" />
+            <span className="text-[8px] font-mono text-slate-400">{feedLabels[scenarioId]}</span>
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-black/70 backdrop-blur-sm border-t border-red-900/50 z-10">
+          <LiveTimestamp />
+        </div>
+      </div>
+    );
+  }
+
+  // For fire scenario, use real YouTube factory fire drone footage
+  if (scenarioId === "zagrozenia") {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-black">
+        <div className="absolute inset-0">
+          <iframe
+            src="https://www.youtube.com/embed/6cfJQWHfmKY?autoplay=1&mute=1&loop=1&playlist=6cfJQWHfmKY&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&start=3"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ width: "200%", height: "200%", border: "none" }}
+            allow="autoplay; encrypted-media"
+            allowFullScreen={false}
+          />
+        </div>
+
+        {/* Thermal tint overlay */}
+        <div className="absolute inset-0 pointer-events-none z-[2]" style={{
+          background: "linear-gradient(180deg, rgba(30,5,0,0.12) 0%, transparent 40%, transparent 60%, rgba(30,5,0,0.12) 100%)",
+        }} />
+
+        {/* Scan lines */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, transparent 1px, transparent 3px)",
+          backgroundSize: "100% 3px",
+        }} />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.55) 100%)",
+        }} />
+
+        {/* Corner ticks */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" preserveAspectRatio="none">
+          <line x1="3%" y1="3%" x2="8%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="3%" x2="3%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="3%" x2="97%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="3%" x2="97%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="3%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="8%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="97%" x2="97%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="97%" x2="97%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+        </svg>
+
+        {/* Fire detection box */}
+        <div className="absolute z-[4] pointer-events-none" style={{ top: "25%", left: "30%", width: "40%", height: "45%" }}>
+          <div className="w-full h-full border-2 border-red-500/60 animate-pulse" style={{ boxShadow: "0 0 12px rgba(239,68,68,0.4)" }}>
+            <div className="absolute -top-3.5 left-0 text-[7px] font-mono text-red-400 font-bold">
+              ◆ POŻAR WYKRYTY • CV DETEKCJA
+            </div>
+            <div className="absolute -bottom-3.5 left-0 text-[6px] font-mono text-amber-400/80">
+              TEMP: ~680°C • ROZP: 42×28m
+            </div>
+            <div className="absolute -bottom-3.5 right-0 text-[6px] font-mono text-red-400/70">
+              CONF: 98%
+            </div>
+          </div>
+        </div>
+
+        {/* Temp reading top-right */}
+        <div className="absolute top-8 right-3 z-[5] pointer-events-none text-right">
+          <div className="text-[7px] font-mono text-amber-400/70 mb-0.5">IR FLIR BOSON 640</div>
+          <div className="text-[10px] font-mono text-red-400 font-bold">MAX: 683°C</div>
+          <div className="text-[8px] font-mono text-amber-300/60">AVG: 342°C</div>
+        </div>
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-1.5 bg-black/70 backdrop-blur-sm border-b border-red-900/50 z-10">
+          <div className="flex items-center gap-2">
+            <Video className="w-3 h-3 text-red-500" />
+            <span className="text-[9px] font-rajdhani font-bold tracking-widest text-red-400">LIVE FEED</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Signal className="w-3 h-3 text-green-400" />
+            <span className="text-[8px] font-mono text-slate-400">{feedLabels[scenarioId]}</span>
+          </div>
+        </div>
         <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-black/70 backdrop-blur-sm border-t border-red-900/50 z-10">
           <LiveTimestamp />
         </div>
