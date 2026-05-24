@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* ============================================================================
+ * SKY MARSHAL — STALOWA WOLA RED + BLACK PALETTE
+ * Single dark theme. Red = brand / actions / UI accents.
+ * ============================================================================ */
+
+:root {
+  --bg-app: #050505;                              /* pure deep black */
+  --bg-panel: rgba(15, 8, 8, 0.94);               /* dark with subtle red tint */
+  --bg-panel-hover: rgba(40, 14, 14, 0.96);
+  --border-panel: #3a1818;                        /* dark red-tinted border */
+  --text-primary: #f5f5f5;                        /* near-white */
+  --text-secondary: #cbd5e1;                      /* light gray */
+  --text-muted: #94a3b8;                          /* mid gray */
+  --neon-cyan: #ef4444;                           /* Stalowa Wola RED (was cyan) */
+  --neon-accent: #dc2626;                         /* darker brand red */
+  --bg-button: #1a0a0a;                           /* near-black with red */
+  --bg-button-hover: #2a1010;
+  --grid-color: rgba(239, 68, 68, 0.08);
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Theme-aware layout classes */
+.theme-bg-app { background-color: var(--bg-app); }
+.theme-bg-panel { background-color: var(--bg-panel); }
+.theme-bg-panel-hover:hover { background-color: var(--bg-panel-hover); }
+.theme-border { border-color: var(--border-panel) !important; }
+.theme-text-primary { color: var(--text-primary); }
+.theme-text-secondary { color: var(--text-secondary); }
+.theme-text-muted { color: var(--text-muted); }
+.theme-neon-text { color: var(--neon-cyan); }
+.theme-neon-border { border-color: var(--neon-cyan) !important; }
+.theme-neon-bg { background-color: var(--neon-cyan); }
+.theme-bg-button { background-color: var(--bg-button); }
+.theme-bg-button:hover { background-color: var(--bg-button-hover); }
+
+/* Font utilities */
+.font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+.font-sharetech { font-family: 'Share Tech Mono', monospace; }
+.font-jetbrains { font-family: 'JetBrains Mono', monospace; }
+
+/* Ticker tape */
+.ticker-wrap { overflow: hidden; white-space: nowrap; }
+.ticker { display: inline-block; animation: ticker 40s linear infinite; }
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Custom scrollbars */
+.terminal-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+.terminal-scroll::-webkit-scrollbar-track { background: #050505; }
+.terminal-scroll::-webkit-scrollbar-thumb { background: #3a1818; border-radius: 2px; }
+.terminal-scroll::-webkit-scrollbar-thumb:hover { background: #5a2828; }
+
+/* Tactical grid overlay pattern */
+.reticle-crosshair {
+  background-image:
+    linear-gradient(to right, rgba(239, 68, 68, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(239, 68, 68, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Military corner clips */
+.clip-chamfer {
+  position: relative;
+  background-color: transparent !important;
+  border: none !important;
+  clip-path: polygon(
+    0px 8px,
+    8px 0px,
+    calc(100% - 8px) 0px,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0px calc(100% - 8px)
+  );
+}
+
+.clip-chamfer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--border-panel);
+  z-index: -2;
+  clip-path: inherit;
+  pointer-events: none;
+}
+
+.clip-chamfer::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background-color: var(--bg-panel);
+  z-index: -1;
+  clip-path: inherit;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+}
+
+.clip-chamfer-lg {
+  clip-path: polygon(
+    0px 16px,
+    16px 0px,
+    calc(100% - 16px) 0px,
+    100% 16px,
+    100% calc(100% - 16px),
+    calc(100% - 16px) 100%,
+    16px 100%,
+    0px calc(100% - 16px)
+  );
+}
+
+/* Fade-in animation used by overlays */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fadeIn { animation: fadeIn 250ms ease-out forwards; }
