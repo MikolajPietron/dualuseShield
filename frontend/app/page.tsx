@@ -11,6 +11,7 @@ import { DroneReconView } from "./components/DroneReconView";
 import { SystemStatusBar } from "./components/SystemStatusBar";
 import { FleetPanel } from "./components/FleetPanel";
 import { SourcesModal } from "./components/SourcesModal";
+import { DroneDispatchPanel } from "./components/DroneDispatchPanel";
 
 export default function SkyMarshalDashboard() {
   const cesiumContainerRef = useRef<HTMLDivElement>(null);
@@ -19,11 +20,12 @@ export default function SkyMarshalDashboard() {
   const [showFleet, setShowFleet] = useState(false);
   const [showSources, setShowSources] = useState(false);
 
-  const { focusOnScenario, clearFocus } = useCesiumViewer({
+  const { viewerRef, focusOnScenario, clearFocus } = useCesiumViewer({
     containerRef: cesiumContainerRef,
     centerLat: CENTER_LAT,
     centerLon: CENTER_LON
   });
+  const [showDispatch, setShowDispatch] = useState(false);
 
   useEffect(() => {
     setClockTime(new Date().toTimeString().split(" ")[0]);
@@ -61,7 +63,7 @@ export default function SkyMarshalDashboard() {
 
       <CesiumViewport cesiumContainerRef={cesiumContainerRef} />
 
-      {!activeScenario && (
+      {!activeScenario && !showDispatch && (
         <ReconLauncher
           scenarios={RECON_SCENARIOS}
           onLaunch={(id) => setActiveReconId(id)}
@@ -75,6 +77,8 @@ export default function SkyMarshalDashboard() {
           onClose={handleClose}
         />
       )}
+
+      {!activeScenario && <DroneDispatchPanel viewerRef={viewerRef} onOpenChange={setShowDispatch} />}
 
       {showFleet && <FleetPanel onClose={() => setShowFleet(false)} />}
       {showSources && <SourcesModal onClose={() => setShowSources(false)} />}

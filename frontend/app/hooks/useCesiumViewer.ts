@@ -231,15 +231,13 @@ export function useCesiumViewer({
         },
         label: {
           text: node.name.toUpperCase(),
-          font: "bold 42px Share Tech Mono, monospace",
-          fillColor: Cesium.Color.fromCssColorString("#0f172a"),
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 6,
+          font: "bold 32px Share Tech Mono, monospace",
+          fillColor: Cesium.Color.BLACK,
+          style: Cesium.LabelStyle.FILL,
           showBackground: false,
-          scale: 0.3,
+          scale: 0.35,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -18),
+          pixelOffset: new Cesium.Cartesian2(0, -22),
           disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
       });
@@ -248,15 +246,13 @@ export function useCesiumViewer({
         position: Cesium.Cartesian3.fromDegrees(node.lon, node.lat, 180),
         label: {
           text: `[${node.id}] ${node.lat.toFixed(4)}°N ${node.lon.toFixed(4)}°E`,
-          font: "bold 28px JetBrains Mono, monospace",
-          fillColor: Cesium.Color.fromCssColorString("#475569"),
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineColor: Cesium.Color.WHITE.withAlpha(0.95),
-          outlineWidth: 5,
+          font: "bold 24px JetBrains Mono, monospace",
+          fillColor: Cesium.Color.BLACK,
+          style: Cesium.LabelStyle.FILL,
           showBackground: false,
           scale: 0.3,
           verticalOrigin: Cesium.VerticalOrigin.TOP,
-          pixelOffset: new Cesium.Cartesian2(0, 10),
+          pixelOffset: new Cesium.Cartesian2(0, 14),
           disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
       });
@@ -289,11 +285,10 @@ export function useCesiumViewer({
       position: Cesium.Cartesian3.fromDegrees(22.062, 50.57, 50),
       label: {
         text: "RZEKA SAN",
-        font: "bold 32px Share Tech Mono, monospace",
-        fillColor: Cesium.Color.fromCssColorString("#0284c7"),
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 5,
+        font: "bold 26px Share Tech Mono, monospace",
+        fillColor: Cesium.Color.BLACK,
+        style: Cesium.LabelStyle.FILL,
+        showBackground: false,
         scale: 0.35,
         disableDepthTestDistance: Number.POSITIVE_INFINITY
       }
@@ -314,11 +309,10 @@ export function useCesiumViewer({
       position: Cesium.Cartesian3.fromDegrees(22.01, 50.6, 30),
       label: {
         text: "STREFA OPERACYJNA STW // NW",
-        font: "bold 28px JetBrains Mono, monospace",
-        fillColor: Cesium.Color.fromCssColorString("#0891b2"),
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 4,
+        font: "bold 24px JetBrains Mono, monospace",
+        fillColor: Cesium.Color.BLACK,
+        style: Cesium.LabelStyle.FILL,
+        showBackground: false,
         scale: 0.3,
         disableDepthTestDistance: Number.POSITIVE_INFINITY
       }
@@ -328,11 +322,10 @@ export function useCesiumViewer({
       position: Cesium.Cartesian3.fromDegrees(22.09, 50.52, 30),
       label: {
         text: "STREFA OPERACYJNA STW // SE",
-        font: "bold 28px JetBrains Mono, monospace",
-        fillColor: Cesium.Color.fromCssColorString("#0891b2"),
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 4,
+        font: "bold 24px JetBrains Mono, monospace",
+        fillColor: Cesium.Color.BLACK,
+        style: Cesium.LabelStyle.FILL,
+        showBackground: false,
         scale: 0.3,
         disableDepthTestDistance: Number.POSITIVE_INFINITY
       }
@@ -357,13 +350,12 @@ export function useCesiumViewer({
     viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(22.0495, 50.5512, 40),
       label: {
-        text: "NOTAM P-23 • STREFA ZAKAZANA HSW",
-        font: "bold 28px Rajdhani, sans-serif",
-        fillColor: Cesium.Color.RED.withAlpha(0.8),
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 5,
-        scale: 0.28,
+        text: "⚠ NOTAM P-23 • STREFA ZAKAZANA HSW",
+        font: "bold 26px Rajdhani, sans-serif",
+        fillColor: Cesium.Color.BLACK,
+        style: Cesium.LabelStyle.FILL,
+        showBackground: false,
+        scale: 0.3,
         disableDepthTestDistance: Number.POSITIVE_INFINITY
       }
     });
@@ -383,13 +375,12 @@ export function useCesiumViewer({
     viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(21.98, 50.62, 30),
       label: {
-        text: "U-SPACE • MAX 120m AGL • LTE-A",
-        font: "bold 26px JetBrains Mono, monospace",
-        fillColor: Cesium.Color.fromCssColorString("#7c3aed"),
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 4,
-        scale: 0.28,
+        text: "✦ U-SPACE • MAX 120m AGL • LTE-A",
+        font: "bold 24px JetBrains Mono, monospace",
+        fillColor: Cesium.Color.BLACK,
+        style: Cesium.LabelStyle.FILL,
+        showBackground: false,
+        scale: 0.3,
         disableDepthTestDistance: Number.POSITIVE_INFINITY
       }
     });
@@ -413,13 +404,12 @@ export function useCesiumViewer({
         label: {
           text: base.label,
           font: "bold 24px Share Tech Mono, monospace",
-          fillColor: Cesium.Color.fromCssColorString("#22c55e"),
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 4,
-          scale: 0.25,
+          fillColor: Cesium.Color.BLACK,
+          style: Cesium.LabelStyle.FILL,
+          showBackground: false,
+          scale: 0.28,
           verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-          pixelOffset: new Cesium.Cartesian2(0, -12),
+          pixelOffset: new Cesium.Cartesian2(0, -14),
           disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
       });
