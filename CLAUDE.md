@@ -1,98 +1,276 @@
-# Sky Marshal — kontekst projektu
+# SKY MARSHAL — Full Project Context
 
-## Czym jest Sky Marshal
+> **For Claude Code / AI assistants.** This file contains everything you need to understand and modify this project.
 
-System koordynacji rozproszonych zasobów dronowych w Stalowej Woli. Łączy pojedyncze drony należące do różnych jednostek (Policja, PSP, OSP, Zarządzanie Kryzysowe) w jeden organizm operacyjny — wspólne centrum dowodzenia, planowanie misji, koordynacja zadań.
+## What is Sky Marshal
 
-**Dual-use** — system działa w dwóch trybach:
-- **Cywilny:** pożary, powodzie, katastrofy naturalne, zaginięcia, akcje SAR.
-- **Militarno-kryzysowy:** zwiad, rozpoznanie zagrożeń, wsparcie obrony cywilnej, transport krytyczny.
+An **interactive 3D dashboard** for coordinating a dispersed fleet of drones across emergency services in **Stalowa Wola, Poland**. Built for a hackathon (dual-use civil/military drone coordination challenge).
 
-## Problem do rozwiązania
+The system takes individual drones scattered across Police, Fire Service (PSP), Volunteer Fire Service (OSP), and Crisis Management (ZK) — currently operating in silos — and unifies them into a single operational organism with shared situational awareness, mission planning, and multi-service coordination.
 
-Obecnie drony służb działają **w silosach** — brak wspólnego centrum, brak planowania międzyresortowego, brak współdzielenia danych w czasie rzeczywistym. Sky Marshal ma zlikwidować tę fragmentaryzację.
+**Dual-use** = same drones, same system, two contexts:
+- **Civil:** fires, floods, disasters, SAR, factory inspections
+- **Military-crisis:** hostile drone detection, critical infrastructure protection, NATO logistics support
 
-## Co obejmuje model (4 obszary z briefu)
+## Tech Stack
 
-1. **Mapa miasta i otoczenia** — Stalowa Wola, infrastruktura krytyczna, dolina Sanu.
-2. **Możliwości techniczne dronów** — zasięg, czas lotu, sensory (termowizja, kamery RGB, LIDAR, retransmitor radiowy).
-3. **Procedury operacyjne służb** — kto, co, kiedy — łańcuch dowodzenia + koordynacja wielosłużbowa.
-4. **Scenariusze zagrożeń** — pożar HSW, powódź Sanu, zaginięcie, dual-use kryzys hybrydowy.
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| Framework | **Next.js 16.2.6** (App Router) | Single-page dashboard, `app/page.tsx` is the orchestrator |
+| UI | **React 19** + **TypeScript 5** (strict) | All components are `"use client"` |
+| Styling | **Tailwind CSS v4** | `@import "tailwindcss"` in globals.css, custom CSS vars for dark theme |
+| 3D Map | **CesiumJS 1.118** (CDN) | CartoDB Voyager basemap, loaded via `<script>` in layout.tsx |
+| 3D Drone | **Three.js 0.184** + R3F + drei | Used only for the fly-in intro animation (`fpv_drone.glb`) |
+| Icons | **lucide-react 1.16.0** | |
+| Fonts | **Rajdhani** (headings), **Share Tech Mono** + **JetBrains Mono** (data) | Google Fonts CDN |
 
-Plus: PAŻP / strefy DRA-R/DRA-P / U-Space / BVLOS / EASA dla operacji służb publicznych.
+## How to Run
 
-## Wymagania formalne dostarczenia
+```bash
+cd frontend
+npm install
+npm run dev
+# → http://localhost:3000
+```
 
-1. **Opis rozwiązania** — prezentacja max 10 slajdów LUB film max 3 minuty.
-2. **Wizualizacja przestrzenna** — mapa / dashboard / link do interaktywnej aplikacji.
-3. **Lista źródeł danych** — nazwy + linki dla danych publicznych.
+No env vars needed. Cesium loads from CDN (no token required for CartoDB tiles).
 
-## Stan kodu
+## Project Structure
 
-W [frontend/](frontend/) działa aplikacja **Next.js 16 + Cesium 3D + Three.js (R3F)**. Frontend powstał jako Steel Sentinel (system obrony przed dronami), a następnie został zrefaktoryzowany do Sky Marshal — dyspozytorni floty dronów służb.
+```
+stalowa6767/
+├── CLAUDE.md                    ← YOU ARE HERE
+├── ZADANIE.md                   ← Original hackathon brief (Polish)
+├── PROJEKT.md                   ← Technical spec with GPS data
+├── DESIGN_PROMPT.md             ← UI moodboard (military dark)
+└── frontend/
+    ├── package.json
+    ├── public/
+    │   └── fpv_drone.glb        ← 3D drone model for fly-in animation
+    └── app/
+        ├── layout.tsx           ← HTML shell, Google Fonts, Cesium CDN
+        ├── globals.css          ← Theme vars, clip-chamfer, animations
+        ├── page.tsx             ← Root orchestrator (SkyMarshalDashboard)
+        ├── types/index.ts       ← CriticalNode type
+        ├── data/
+        │   ├── nodes.ts         ← 7 critical infrastructure POIs (GPS coords)
+        │   ├── river.ts         ← San River polyline coordinates
+        │   ├── reconScenarios.ts← 6 scenarios with full data
+        │   └── fleetData.ts     ← 9 drone assets + 14 data sources
+        ├── hooks/
+        │   └── useCesiumViewer.ts← Cesium init, POIs, river, airspace zones
+        ├── lib/
+        │   └── scenarioRenderer.ts← Cesium entity factory (vehicles, zones, drones)
+        └── components/
+            ├── Header.tsx       ← Top bar with FLOTA/ŹRÓDŁA buttons + clock
+            ├── SystemStatusBar.tsx← Fleet/weather/comms/airspace ticker
+            ├── CesiumViewport.tsx ← Cesium container wrapper
+            ├── ReconLauncher.tsx  ← 6-card scenario selection grid
+            ├── DroneReconView.tsx ← Full scenario view (fly-in + POV overlay)
+            ├── LiveFeed.tsx       ← Canvas-based simulated drone camera feeds
+            ├── FleetPanel.tsx     ← Drone inventory modal
+            └── SourcesModal.tsx   ← Data sources modal (formal requirement)
+```
 
-### Aktualna architektura aplikacji (jeden widok)
+## Application Flow
 
-- **Cesium 3D mapa** Stalowej Woli jako tło (7 obiektów infrastruktury krytycznej + rzeka San + strefa operacyjna)
-- **4 przyciski overlay** w siatce 2x2 ([ReconLauncher.tsx](frontend/app/components/ReconLauncher.tsx)) — po jednym na każdy obszar z briefu
-- **Demo "drone reconnaissance"** ([DroneReconView.tsx](frontend/app/components/DroneReconView.tsx)):
-  - Faza 1: Three.js `fpv_drone.glb` na jasnym pochmurnym niebie ze słońcem (drei `<Sky>` + `<Clouds>`), kamera płynnie zbliża się przez ~3s
-  - Faza 2: transparent overlay nad mapą — kamera Cesium zoomuje do celu, animowane jednostki na mapie (GTA-style)
-- **Animowane sceny per scenariusz** ([lib/scenarioRenderer.ts](frontend/app/lib/scenarioRenderer.ts)):
-  - **Mapa** → dron leci po prostokątnej ścieżce skanowania nad HSW, 4 waypoints w rogach
-  - **Możliwości** → 2 termalne hot-spoty (+280°C, +65°C) + 1 cool-spot (+42°C) nad Elektrownią
-  - **Procedury** → animowany pościg: PODEJRZANY z pulsującym reticle ringiem + 3 patrole z FOV cones + blokada Wałowa + dron-tracker beacon nad uciekającym
-  - **Zagrożenia** → pulsujący pożar HSW + strefa zadymienia + 3 wozy strażackie zbiegające się + punkt zborny + dashed evac route
-- **Data card** po lewej (~360px): scenario title + status badge + opis + **PLAN DZIAŁANIA** (4 kroki z statusami AKTYWNY/WYKONANE/OCZEKUJE) + dane operacyjne + detekcje CV
+```
+┌─────────────────────────────────────────────────┐
+│  HEADER (SKY MARSHAL + FLOTA + ŹRÓDŁA + clock)  │
+├─────────────────────────────────────────────────┤
+│  SYSTEM STATUS BAR (fleet/weather/comms ticker)  │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│    ┌──────────────────────────────────────┐      │
+│    │                                      │      │
+│    │     CESIUM 3D MAP (background)       │      │
+│    │     - 7 POIs (hex towers)            │      │
+│    │     - River San                      │      │
+│    │     - Operational zone               │      │
+│    │     - NOTAM P-23 zone (HSW)          │      │
+│    │     - U-Space corridor               │      │
+│    │     - Drone base positions           │      │
+│    │                                      │      │
+│    │   ┌──────────────────────────────┐   │      │
+│    │   │  6 SCENARIO CARDS (overlay)  │   │      │
+│    │   │  3×2 grid (ReconLauncher)    │   │      │
+│    │   └──────────────────────────────┘   │      │
+│    └──────────────────────────────────────┘      │
+│                                                  │
+│  [Click card] → DroneReconView                   │
+│    Phase 1: Three.js fly-in (3s)                 │
+│    Phase 2: POV overlay                          │
+│      ├── DataCard (left) — title, plan, detections│
+│      ├── LiveFeed (right) — canvas simulation     │
+│      ├── Crosshair + CV banner (center)          │
+│      └── ZAKOŃCZ MISJĘ button (top center)       │
+└─────────────────────────────────────────────────┘
+```
 
-Stack:
-- Next.js 16.2.6 (App Router) + React 19 + TypeScript 5 (strict)
-- Tailwind v4 (`@import "tailwindcss"`)
-- Cesium 1.118 (CDN w `frontend/app/layout.tsx`, używamy CartoDB Voyager basemap)
-- Three.js 0.184 + `@react-three/fiber@9.6.1` + `@react-three/drei@10.7.7` (Sky, Clouds, useGLTF)
-- lucide-react@1.16.0
+## The 6 Scenarios
 
-### Wewnętrzna konwencja nazw (historyczna)
+| # | ID | Title | What happens |
+|---|-----|-------|-------------|
+| 1 | `mapa` | MAPOWANIE HUTY STALOWA WOLA | LIDAR/RGB scan of HSW factory, boustrophedon pattern, 3D model generation |
+| 2 | `mozliwosci` | PREWENCYJNA ANALIZA HUTY | Multi-sensor preventive check: fence integrity, thermal anomalies, leaks, fire systems, access gates |
+| 3 | `procedury` | POŚCIG POLICYJNY — MOST | Night pursuit across bridge: fleeing vehicle with AI tracking, police patrols with FOV cones, blockade |
+| 4 | `zagrozenia` | POŻAR HUTY STALOWA WOLA | Fire in Hall #7: CV detection, smoke zone, 3 fire trucks converging, evacuation route, temperature readings |
+| 5 | `powodz` | POWÓDŹ — RZEKA SAN | San river flood: water level monitoring, bridge pillar erosion, LIDAR flood mapping, evacuation coordination |
+| 6 | `dualuse` | SCENARIUSZ HYBRYDOWY | Hostile drone (DJI Phantom 4) detected over HSW: RF triangulation, operator tracking, Police + 3rd OT Brigade C-UAS response |
 
-Po refaktorze do Sky Marshal część kluczy TypeScript została czystych. Co warto wiedzieć:
-- `CriticalNode` w [frontend/app/types/index.ts](frontend/app/types/index.ts) — typ POI na mapie (7 obiektów z [data/nodes.ts](frontend/app/data/nodes.ts))
-- Wszystkie scenariusze i UI są już 100% Sky Marshal (brak relikt Steel Sentinel w stringach)
-- Jedyne legacy w nazewnictwie folderowym — sam projekt sieci nazywa się `stalowa6767`
+Each scenario has:
+- **Data card** with: description, status, data points, plan (numbered steps with done/active/pending), CV detections with confidence bars
+- **Live feed** (canvas animation): unique per scenario — night vision, thermal, chase cam, fire detection, flood monitoring, RF tracking
+- **Map entities** (Cesium): animated vehicles, drone trackers, zones, FOV cones, routes
 
-## Krytyczne pliki referencyjne
+## Cesium Map Details
 
-- [frontend/](frontend/) — działająca aplikacja Sky Marshal (Next.js 16)
-- [frontend/README.md](frontend/README.md) — instrukcja uruchomienia + struktura katalogów
-- [frontend/app/page.tsx](frontend/app/page.tsx) — orchestrator stanu (~55 linii, SkyMarshalDashboard)
-- [frontend/app/data/reconScenarios.ts](frontend/app/data/reconScenarios.ts) — 4 scenariusze z planami + animowanymi jednostkami
-- [frontend/app/lib/scenarioRenderer.ts](frontend/app/lib/scenarioRenderer.ts) — fabryka Cesium entity dla wszystkich jednostek (pojazdy, FOV, strefy)
-- [frontend/app/hooks/useCesiumViewer.ts](frontend/app/hooks/useCesiumViewer.ts) — init mapy Cesium + `focusOnScenario` / `clearFocus`
-- [frontend/CLAUDE.md](frontend/CLAUDE.md) — wcześniejsza dokumentacja per-plik (uwaga: pisana dla starej wersji Steel Sentinel, część kontekstu już nieaktualna)
-- [ZADANIE.md](ZADANIE.md) — pierwotne zadanie hackathonowe (Steel Sentinel / Defence) — referencja historyczna
-- [PROJEKT.md](PROJEKT.md) — specyfikacja techniczna z danymi GPS węzłów (nadal aktualna geografia)
-- [DESIGN_PROMPT.md](DESIGN_PROMPT.md) — moodboard UI (military dark dashboard)
+- **Basemap**: CartoDB Voyager (light) — `https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}@2x.png`
+- **Center**: 50.5630°N, 22.0490°E (Stalowa Wola)
+- **Camera**: heading 15°, pitch -38°, altitude 4500m
+- **POIs**: 7 hex tower markers with colored beacons and coordinate labels
+- **River San**: cyan polyline with glow material
+- **Airspace**: NOTAM P-23 (red circle, 500m around HSW), U-Space corridor (purple rectangle), drone bases (green dots)
+- **Scenario entities**: rendered by `scenarioRenderer.ts` — supports: `police-car`, `fire-truck`, `fleeing-vehicle`, `fire-zone`, `smoke-zone`, `blockade`, `evac-point`, `evac-route`, `thermal-hot`, `thermal-cool`, `drone-tracker`, `scan-path`, `waypoint`
 
-## Stalowa Wola — dane operacyjne
+## Design System
 
-Środek miasta: **50.5630, 22.0490**.
+**Dark military theme** — red + black palette.
 
-Kluczowe obiekty (cele misji dronowych — patrole, monitorowanie, transport):
+- Background: `#050505` (pure black)
+- Panels: `rgba(15, 8, 8, 0.94)` (dark with red tint)
+- Borders: `#3a1818` (dark red)
+- Brand color: `#ef4444` (red — was cyan, variable is still called `--neon-cyan`)
+- Status colors: emerald (OK), amber (warning), red (alert/active), cyan (info)
+- Clip-chamfer: military corner-cut effect on cards (`.clip-chamfer` in CSS)
+- Fonts: Rajdhani (bold headings/labels), JetBrains Mono (data), Share Tech Mono (coordinates)
+- Thin scrollbar: `.terminal-scroll` class
 
-| ID | Obiekt | Lat/Lon | Typ |
-|---|---|---|---|
-| OBJ_01 | Huta Stalowa Wola | 50.5482, 22.0495 | przemysł obronny |
-| OBJ_02 | Elektrownia Stalowa Wola | 50.5574, 22.0621 | energetyka |
-| OBJ_03 | Ujęcie Wody MZK | 50.5841, 22.0315 | wodociągi |
-| OBJ_04 | GPZ Maziarnia | 50.5395, 22.0682 | dystrybucja prądu |
-| OBJ_05 | Węzeł Kolejowy Rozwadów | 50.5878, 22.0465 | logistyka |
-| OBJ_06 | Most Bora-Komorowskiego | 50.5744, 22.0678 | przeprawa |
-| OBJ_07 | Centrum Zarządzania Kryzysowego | 50.5701, 22.0524 | dowodzenie |
+## Key Data Types
 
-Rzeka San — po wschodniej stronie miasta — istotna dla scenariuszy powodziowych i jako korytarz nawigacyjny.
+### `ReconScenario` (reconScenarios.ts)
+```typescript
+{
+  id: ScenarioId,           // "mapa" | "mozliwosci" | "procedury" | "zagrozenia" | "powodz" | "dualuse"
+  title: string,            // Card title
+  brief: string,            // Card description
+  buttonCta: string,        // CTA button text
+  icon: LucideIcon,         // Card icon
+  targetNodeId: string,     // Which POI to fly to (OBJ_01..OBJ_07)
+  scenarioTitle: string,    // Full title in POV overlay
+  scenarioStatus: string,   // Status badge text
+  description: string,      // Long description
+  droneAgency: string,      // "DRON ZK • #STW-ZK-01"
+  mode: string,             // "RGB-4K + LIDAR"
+  mapHighlightColor: "red" | "amber" | "cyan",
+  cameraAltM: number,       // Cesium camera altitude
+  dataPoints: { label, value }[],
+  detections: { label, confidence, color, meta }[],
+  plan: { num, text, status: "done"|"active"|"pending" }[],
+  mapUnits: MapUnit[],       // Cesium entities to render
+}
+```
 
-## Stan obecny i co dalej
+### `DroneAsset` (fleetData.ts)
+```typescript
+{
+  id, callsign, agency, agencyShort,
+  model: string,                     // "DJI Matrice 300 RTK"
+  sensors: string[],                 // ["RGB-4K", "IR 640×512", "LIDAR"]
+  maxRange, maxFlight, maxWind, maxAlt,
+  certBVLOS: boolean,
+  status: "available" | "mission" | "charging" | "maintenance",
+  baseLocation, baseLat, baseLon,
+}
+```
 
-- ✅ **Aplikacja działa w jednym widoku** — mapa Cesium + 4 przyciski + demo z GTA-style animowanymi jednostkami
-- ✅ **Każdy scenariusz ma plan działania** (4 kroki z aktualnym statusem)
-- ✅ **Demo pościgu policyjnego** — pojazd ucieka po moście, 3 patrole gonią z FOV cones, blokada na końcu, dron śledzi z góry
-- ⏳ **Brakuje:** prezentacji 10-slajdowej / filmu 3 min, listy źródeł danych (PAŻP/RCB/EASA/OSM/dane KW Policji)
+### `CriticalNode` (types/index.ts)
+```typescript
+{
+  id: string, name: string,
+  lat: number, lon: number,
+  type: "industrial" | "power" | "water" | "electrical" | "logistic" | "transit" | "hq",
+  description: string,
+  health: number, status: "OPERATIONAL" | "DEGRADED" | "DESTROYED",
+}
+```
+
+## Stalowa Wola — Geographic Data
+
+Center: **50.5630°N, 22.0490°E**
+
+| ID | Object | Coordinates | Type |
+|----|--------|------------|------|
+| OBJ_01 | Huta Stalowa Wola S.A. | 50.5482, 22.0495 | Defense industry (Krab, Borsuk) |
+| OBJ_02 | Elektrownia Stalowa Wola | 50.5574, 22.0621 | Power plant |
+| OBJ_03 | Stacja Uzdatniania MZK | 50.5841, 22.0315 | Water treatment |
+| OBJ_04 | GPZ Maziarnia | 50.5395, 22.0682 | Power distribution |
+| OBJ_05 | Węzeł Kolejowy Rozwadów | 50.5878, 22.0465 | Rail logistics / NATO hub |
+| OBJ_06 | Most Bora-Komorowskiego | 50.5744, 22.0678 | Bridge over San |
+| OBJ_07 | Centrum Zarządzania Kryzysowego | 50.5701, 22.0524 | HQ / command center |
+
+River San — flows along eastern edge of city (flood risk for OBJ_03, OBJ_06).
+
+## Drone Fleet (9 assets)
+
+| Callsign | Agency | Model | Sensors | BVLOS | Status |
+|----------|--------|-------|---------|-------|--------|
+| STW-ZK-01 | ZK | DJI Matrice 300 RTK | RGB-4K, LIDAR, GPS RTK | ✓ | mission |
+| STW-ZK-02 | ZK | DJI Mavic 3 Enterprise | RGB-4K, IR | ✗ | available |
+| STW-ZK-03 | ZK | Autel EVO II Dual 640T | RGB-8K, IR, LIDAR | ✓ | charging |
+| STW-POL-01 | Policja | DJI Matrice 30T | RGB-4K, IR, ZOOM 200× | ✓ | available |
+| STW-POL-02 | Policja | DJI Mavic 3 Enterprise | RGB-4K, IR | ✗ | mission |
+| STW-PSP-01 | PSP | DJI Matrice 300 RTK | RGB-4K, FLIR Boson 640, LIDAR | ✓ | mission |
+| STW-PSP-04 | PSP | DJI Mavic 3T | RGB-4K, IR | ✗ | available |
+| STW-OSP-P1 | OSP Pysznica | DJI Mini 3 Pro | RGB-4K | ✗ | available |
+| STW-OSP-B1 | OSP Bojanów | Autel EVO Nano+ | RGB-4K, IR basic | ✗ | maintenance |
+
+## LiveFeed Canvas Rendering
+
+Each scenario has a unique canvas-based simulation in `LiveFeed.tsx`. The rendering uses `requestAnimationFrame` + a central `draw(ctx, w, h, t)` function that switches on `scenarioId`.
+
+All feeds share a common overlay (`drawOverlay`): CRT scan lines, film grain, vignette, corner ticks, GPS coordinates, altitude.
+
+| Scenario | Feed Function | Visual Style |
+|----------|--------------|-------------|
+| mapa | `drawAerialScan` | Green night-vision, building footprints, LIDAR grid, scan beam |
+| mozliwosci | `drawThermalScan` | Blue IR palette, factory halls with ✓/⚠ status, fence perimeter, anomalies, leak detection, access gates, drone path, progress bar |
+| procedury | `drawPoliceChase` | Night-vision aerial: roads, buildings, fleeing vehicle with AI tracking box, police cars with flashing lights, blockade |
+| zagrozenia | `drawFireDetection` | Fire glow layers, flame particles, rising smoke, CV bounding boxes, fire trucks with flashing lights, evacuation route |
+| powodz | `drawFloodMonitoring` | Dark blue terrain, flowing river with flood overflow, bridge with pillar monitoring, water level gauge with alarm, flooded buildings, evacuation route |
+| dualuse | `drawDualUse` | Tactical green, HSW factory, NOTAM protection zone, orbiting intruder drone with RF rings, operator location with uncertainty circle, RF triangulation line, police patrol, RF spectrum analyzer |
+
+## Hackathon Requirements Checklist
+
+1. ✅ **Presentation / video** — interactive dashboard IS the deliverable
+2. ✅ **Spatial visualization** — Cesium 3D map with POIs, zones, animated units, live feeds
+3. ✅ **Data sources list** — SourcesModal with 14 sources + links (accessible via ŹRÓDŁA button)
+
+Required coverage areas:
+- ✅ Map of city and surroundings — Cesium 3D
+- ✅ Drone technical capabilities — FleetPanel with 9 drones, sensors, specs
+- ✅ Operational procedures — Step-by-step plans in each scenario
+- ✅ Threat scenarios — Fire, flood, chase, hostile drone
+- ✅ Transport/recon/comms — Drone cargo (scenario 5), retransmission (status bar)
+- ✅ Regulatory constraints — NOTAM P-23, U-Space zone, max 120m AGL, BVLOS certs
+
+## Common Patterns
+
+- **All components are `"use client"`** — no server components
+- **CSS classes**: Use `theme-*` classes from globals.css, `font-rajdhani` for labels, `font-mono` for data
+- **Modals**: Fixed overlay with `z-[100]`, dark backdrop, border `border-[#3a1818]`
+- **Text sizes**: `text-[8px]`–`text-[14px]` range, tracking-widest on labels
+- **Icons**: lucide-react, typically `w-3 h-3` to `w-5 h-5`
+- **Animations**: `animate-fadeIn`, `animate-pulse`, `animate-slideIn` (Tailwind)
+- **Cesium**: accessed via `(window as any).Cesium` — loaded globally from CDN
+- **No REST API** — all data is static in `data/` files
+
+## Known Gotchas
+
+1. **`--neon-cyan` is actually RED** (`#ef4444`) — legacy naming from when the theme was cyan. Don't rename it, just know that `theme-neon-text` = red.
+2. **`clip-chamfer`** on `.clip-chamfer` elements uses `clip-path: polygon(...)` which **clips overflow/scrollbars**. Don't use it on scrollable containers.
+3. **Cesium CDN** is loaded as a `<script>` tag in `layout.tsx`, not as an npm package. Access via `(window as any).Cesium`.
+4. **Three.js** is only used for the 3-second fly-in animation. Don't use it for map rendering.
+5. **ScenarioId type** must be updated in `reconScenarios.ts` if adding new scenarios.
+6. **`scenarioRenderer.ts`** handles all Cesium entity kinds — add new `case` in the switch if you create new `MapUnit.kind` values.
+7. **Language**: All UI text is in **Polish**. Keep it consistent.

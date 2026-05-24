@@ -8,11 +8,16 @@ import { Header } from "./components/Header";
 import { CesiumViewport } from "./components/CesiumViewport";
 import { ReconLauncher } from "./components/ReconLauncher";
 import { DroneReconView } from "./components/DroneReconView";
+import { SystemStatusBar } from "./components/SystemStatusBar";
+import { FleetPanel } from "./components/FleetPanel";
+import { SourcesModal } from "./components/SourcesModal";
 
 export default function SkyMarshalDashboard() {
   const cesiumContainerRef = useRef<HTMLDivElement>(null);
   const [activeReconId, setActiveReconId] = useState<ScenarioId | null>(null);
   const [clockTime, setClockTime] = useState<string>("");
+  const [showFleet, setShowFleet] = useState(false);
+  const [showSources, setShowSources] = useState(false);
 
   const { focusOnScenario, clearFocus } = useCesiumViewer({
     containerRef: cesiumContainerRef,
@@ -46,7 +51,13 @@ export default function SkyMarshalDashboard() {
 
   return (
     <div className="flex flex-col flex-1 h-screen relative select-none">
-      <Header clockTime={clockTime} />
+      <Header
+        clockTime={clockTime}
+        onFleet={() => setShowFleet(true)}
+        onSources={() => setShowSources(true)}
+      />
+
+      <SystemStatusBar />
 
       <CesiumViewport cesiumContainerRef={cesiumContainerRef} />
 
@@ -64,6 +75,9 @@ export default function SkyMarshalDashboard() {
           onClose={handleClose}
         />
       )}
+
+      {showFleet && <FleetPanel onClose={() => setShowFleet(false)} />}
+      {showSources && <SourcesModal onClose={() => setShowSources(false)} />}
     </div>
   );
 }

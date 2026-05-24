@@ -1,7 +1,7 @@
-import { Map as MapIcon, Cpu, Users, Flame } from "lucide-react";
+import { Map as MapIcon, Cpu, Users, Flame, Waves, ShieldAlert } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export type ScenarioId = "mapa" | "mozliwosci" | "procedury" | "zagrozenia";
+export type ScenarioId = "mapa" | "mozliwosci" | "procedury" | "zagrozenia" | "powodz" | "dualuse";
 export type HighlightColor = "red" | "amber" | "cyan";
 
 export interface ReconDataPoint {
@@ -208,47 +208,52 @@ export const RECON_SCENARIOS: ReconScenario[] = [
   },
 
   // =========================================================================
-  // 2. MOŻLIWOŚCI TECHNICZNE
+  // 2. PREWENCYJNA ANALIZA HUTY
   // =========================================================================
   {
     id: "mozliwosci",
-    title: "MOŻLIWOŚCI TECHNICZNE",
-    brief: "Termowizja IR nad Elektrownią. Test sensorów, diagnostyka przegrzań i wycieków ciepła.",
-    buttonCta: "PODGLĄD SENSORÓW",
+    title: "PREWENCYJNA ANALIZA HUTY",
+    brief: "Wielosensorowy skan prewencyjny HSW — wykrywanie zagrożeń zanim się pojawią. Termowizja, AI, LIDAR.",
+    buttonCta: "ANALIZA PREWENCYJNA",
     icon: Cpu,
 
-    targetNodeId: "OBJ_02",
-    scenarioTitle: "TERMOGRAFIA ELEKTROWNI",
-    scenarioStatus: "SKAN SENSORYCZNY",
+    targetNodeId: "OBJ_01",
+    scenarioTitle: "PREWENCYJNA ANALIZA HUTY STALOWA WOLA",
+    scenarioStatus: "SKAN PREWENCYJNY • W TOKU",
     description:
-      "Dron PSP testuje moduł termowizji IR nad blokiem energetycznym Elektrowni Stalowa Wola. Cel: wykrycie nieprawidłowych temperatur na kominie gazowym i transformatorach — prewencja awarii.",
-    droneAgency: "DRON PSP • #STW-PSP-04",
-    mode: "TERMOWIZJA IR 640×512 • PALETA INFERNO",
+      "Dron ZK wykonuje rutynowy skan prewencyjny terenu Huty Stalowa Wola S.A. — identyfikacja potencjalnych zagrożeń zanim się zmaterializują. Kontrola: integralność budynków, ogrodzenie, wycieki substancji, anomalie termiczne, punkty dostępu, systemy p.poż.",
+    droneAgency: "DRON ZK • #STW-ZK-02",
+    mode: "MULTI-SENSOR • IR + RGB + LIDAR",
     mapHighlightColor: "amber",
     cameraAltM: 800,
     dataPoints: [
-      { label: "Czujnik IR", value: "FLIR Boson 640" },
-      { label: "Zakres temperatur", value: "−20°C / +650°C" },
-      { label: "Bateria", value: "87% • 32 min lotu" },
-      { label: "GPS Lock", value: "14 satelitów" },
-      { label: "Łączność", value: "U-Space LTE-A" }
+      { label: "Obszar skanu", value: "220 ha • HSW" },
+      { label: "Czujniki aktywne", value: "IR + RGB-4K + LIDAR" },
+      { label: "Punkty kontrolne", value: "38 / 38 zaplanowanych" },
+      { label: "Anomalie wykryte", value: "3 (niski priorytet)" },
+      { label: "Czas skanu", value: "≈ 45 min • 67% ukończono" }
     ],
     detections: [
-      { label: "Komin gazowy", confidence: 91, color: "amber", meta: "+280°C — w normie" },
-      { label: "Transformator T2", confidence: 88, color: "amber", meta: "+65°C — w normie" },
-      { label: "Chłodnia kominowa", confidence: 85, color: "cyan", meta: "+42°C" }
+      { label: "Ogrodzenie sektor N-7", confidence: 94, color: "amber", meta: "Uszkodzenie siatki — 2.4 m" },
+      { label: "Anomalia termiczna hala #4", confidence: 89, color: "amber", meta: "+58°C — powyżej normy" },
+      { label: "Wyciek cieczy — rampa załadunkowa", confidence: 82, color: "red", meta: "Substancja nieznana" },
+      { label: "System p.poż. hala #11", confidence: 96, color: "cyan", meta: "Sprawny — OK" },
+      { label: "Dostęp brama wschodnia", confidence: 100, color: "cyan", meta: "Zamknięta — OK" },
+      { label: "Oświetlenie perymetryczne", confidence: 91, color: "cyan", meta: "38/40 lamp — 2 niesprawne" }
     ],
     plan: [
-      { num: 1, text: "Skan termowizyjny komina gazowego", status: "done" },
-      { num: 2, text: "Diagnostyka transformatorów T1-T4", status: "active" },
-      { num: 3, text: "Pomiar chłodni kominowej + porównanie z normą", status: "active" },
-      { num: 4, text: "Raport do operatora + dziennik konserwacji", status: "pending" }
+      { num: 1, text: "Termowizja hal produkcyjnych — wykrywanie przegrzań i anomalii", status: "done" },
+      { num: 2, text: "Kontrola integralności ogrodzenia perymetrycznego (LIDAR)", status: "active" },
+      { num: 3, text: "Skan wycieków substancji chemicznych i paliw (CV + IR)", status: "active" },
+      { num: 4, text: "Weryfikacja systemów p.poż. i punktów ewakuacyjnych", status: "active" },
+      { num: 5, text: "Kontrola zamknięcia bram i punktów dostępu", status: "pending" },
+      { num: 6, text: "Raport prewencyjny → CZK Stalowa Wola", status: "pending" }
     ],
     mapUnits: [
-      { id: "drone-thermal", kind: "drone-tracker", label: "DRON PSP", staticPos: [22.0625, 50.5577] },
-      { id: "hot-chimney", kind: "thermal-hot", label: "+280°C", staticPos: [22.0625, 50.5575], radiusM: 60 },
-      { id: "hot-trafo", kind: "thermal-hot", label: "+65°C", staticPos: [22.0615, 50.5570], radiusM: 45 },
-      { id: "cool-tower", kind: "thermal-cool", label: "+42°C", staticPos: [22.0628, 50.5572], radiusM: 50 }
+      { id: "drone-thermal", kind: "drone-tracker", label: "DRON ZK", staticPos: [HSW_LON, HSW_LAT] },
+      { id: "hot-anomaly", kind: "thermal-hot", label: "+58°C", staticPos: [HSW_LON - 0.001, HSW_LAT + 0.0005], radiusM: 45 },
+      { id: "fence-breach", kind: "thermal-cool", label: "OGRODZENIE", staticPos: [HSW_LON + 0.003, HSW_LAT + 0.001], radiusM: 30 },
+      { id: "leak-zone", kind: "thermal-hot", label: "WYCIEK", staticPos: [HSW_LON + 0.002, HSW_LAT - 0.0008], radiusM: 35 }
     ]
   },
 
@@ -421,6 +426,106 @@ export const RECON_SCENARIOS: ReconScenario[] = [
         label: "EWAKUACJA",
         path: EVAC_ROUTE
       }
+    ]
+  },
+
+  // =========================================================================
+  // 5. POWÓDŹ NA SANIE
+  // =========================================================================
+  {
+    id: "powodz",
+    title: "POWÓDŹ — RZEKA SAN",
+    brief: "Wezbranie Sanu zagraża mostowi i stacji uzdatniania. Drony monitorują poziom wody i koordynują ewakuację.",
+    buttonCta: "MONITORING POWODZI",
+    icon: Waves,
+
+    targetNodeId: "OBJ_06",
+    scenarioTitle: "WEZBRANIE SANU • ZAGROŻENIE POWODZIOWE",
+    scenarioStatus: "ALARM POWODZIOWY • AKTYWNY",
+    description:
+      "Poziom rzeki San przekroczył stan alarmowy (620 cm). Zagrożony most gen. Bora-Komorowskiego i stacja uzdatniania MZK. Drony ZK i PSP dokumentują zasięg zalania, wskazują drogi ewakuacyjne i monitorują filary mostu.",
+    droneAgency: "DRON ZK • #STW-ZK-03",
+    mode: "RGB-4K + LIDAR BATYMETRYCZNY",
+    mapHighlightColor: "cyan",
+    cameraAltM: 1200,
+    dataPoints: [
+      { label: "Poziom Sanu", value: "620 cm (alarm: 580)" },
+      { label: "Prognoza IMGW", value: "wezbranie +40 cm / 6h" },
+      { label: "Zagrożone budynki", value: "≈ 120 w strefie" },
+      { label: "Ewakuacja", value: "W TOKU • 340 osób" },
+      { label: "Drony aktywne", value: "3 (ZK + 2×PSP)" }
+    ],
+    detections: [
+      { label: "Strefa zalania — ul. Nadbrzeżna", confidence: 94, color: "cyan", meta: "≈ 0.8 m wody" },
+      { label: "Filary mostu — erozja", confidence: 78, color: "amber", meta: "Filar #3 — monitorowany" },
+      { label: "Stacja MZK — zagrożona", confidence: 88, color: "red", meta: "Woda 200m od ujęcia" },
+      { label: "Droga ewakuacyjna DK77", confidence: 100, color: "cyan", meta: "Przejezdna" }
+    ],
+    plan: [
+      { num: 1, text: "Ciągły pomiar poziomu Sanu + transmisja do IMGW", status: "active" },
+      { num: 2, text: "LIDAR dokumentacja zasięgu zalania (ortomapa)", status: "active" },
+      { num: 3, text: "Monitoring filarów mostu gen. Bora-Komorowskiego", status: "active" },
+      { num: 4, text: "Koordynacja ewakuacji — wyznaczanie bezpiecznych dróg", status: "active" },
+      { num: 5, text: "Dron cargo — transport worków z piaskiem na wał", status: "pending" },
+      { num: 6, text: "Raport szkód → CZK + wojewoda podkarpacki", status: "pending" }
+    ],
+    mapUnits: [
+      { id: "drone-flood-1", kind: "drone-tracker", label: "DRON ZK", staticPos: [22.0678, 50.5744] },
+      { id: "drone-flood-2", kind: "drone-tracker", label: "DRON PSP", staticPos: [22.0315, 50.5841] },
+      { id: "flood-zone-1", kind: "smoke-zone", staticPos: [22.0678, 50.5744], radiusM: 300 },
+      { id: "flood-zone-2", kind: "smoke-zone", staticPos: [22.0315, 50.5841], radiusM: 200 }
+    ]
+  },
+
+  // =========================================================================
+  // 6. DUAL-USE — SCENARIUSZ HYBRYDOWY
+  // =========================================================================
+  {
+    id: "dualuse",
+    title: "SCENARIUSZ HYBRYDOWY",
+    brief: "Wykryto nieautoryzowany dron w strefie HSW. Koordynacja Policji, ZK i wojska — procedura dual-use.",
+    buttonCta: "REAKCJA HYBRYDOWA",
+    icon: ShieldAlert,
+
+    targetNodeId: "OBJ_01",
+    scenarioTitle: "ZAGROŻENIE HYBRYDOWE • STREFA HSW",
+    scenarioStatus: "ALERT DUAL-USE • CODE AMBER",
+    description:
+      "System detekcji RF wykrył nieautoryzowany dron (ELINT) w strefie ochronnej Huty Stalowa Wola — strategicznego zakładu obronnego (Krab, Borsuk). Uruchomiono procedurę dual-use: Policja, ZK i 3. Brygada OT koordynują rozpoznanie i neutralizację.",
+    droneAgency: "DRON POLICJI • #STW-POL-01",
+    mode: "RGB-4K + RF DETECTION + EO/IR",
+    mapHighlightColor: "red",
+    cameraAltM: 1000,
+    dataPoints: [
+      { label: "Obiekt chroniony", value: "HSW S.A. • TIER 1" },
+      { label: "Detekcja RF", value: "DJI Phantom 4 (cywilny)" },
+      { label: "Pułap intruza", value: "≈ 85 m AGL" },
+      { label: "Czas w strefie", value: "4 min 22 s" },
+      { label: "Jednostki zaangażowane", value: "Policja + ZK + 3.BOT" }
+    ],
+    detections: [
+      { label: "Dron nieautoryzowany", confidence: 97, color: "red", meta: "DJI Phantom 4 — sygnał RC 2.4 GHz" },
+      { label: "Operator — lokalizacja RC", confidence: 72, color: "amber", meta: "≈ 800m SE od HSW" },
+      { label: "Strefa naruszenia", confidence: 100, color: "red", meta: "NOTAM P-23 (HSW)" },
+      { label: "Jednostka C-UAS", confidence: 100, color: "cyan", meta: "3.BOT — ETA 8 min" }
+    ],
+    plan: [
+      { num: 1, text: "Dron Policji — śledzenie i identyfikacja intruza (EO/IR)", status: "active" },
+      { num: 2, text: "Detekcja RF — triangulacja pozycji operatora RC", status: "active" },
+      { num: 3, text: "Patrol Policji — przechwycenie operatora (kierunek SE)", status: "active" },
+      { num: 4, text: "3.BOT C-UAS — standby do neutralizacji (jammer)", status: "pending" },
+      { num: 5, text: "Zabezpieczenie dowodów + raport do ABW", status: "pending" }
+    ],
+    mapUnits: [
+      { id: "drone-police-dual", kind: "drone-tracker", label: "DRON POLICJI", staticPos: [HSW_LON, HSW_LAT] },
+      { id: "intruder-drone", kind: "fleeing-vehicle", label: "INTRUZ", path: [
+        [HSW_LON + 0.001, HSW_LAT + 0.001],
+        [HSW_LON - 0.001, HSW_LAT + 0.002],
+        [HSW_LON + 0.002, HSW_LAT - 0.001],
+        [HSW_LON, HSW_LAT + 0.001]
+      ], loopSeconds: 12 },
+      { id: "rc-operator", kind: "blockade", label: "OPERATOR RC", staticPos: [HSW_LON + 0.008, HSW_LAT - 0.006] },
+      { id: "hsw-zone", kind: "fire-zone", label: "STREFA OCHRONNA HSW", staticPos: [HSW_LON, HSW_LAT], radiusM: 400 }
     ]
   }
 ];

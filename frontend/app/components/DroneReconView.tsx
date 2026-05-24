@@ -7,6 +7,7 @@ import { X, Activity, Radio } from "lucide-react";
 import * as THREE from "three";
 import { ReconScenario, ResolutionStep } from "../data/reconScenarios";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { LiveFeed } from "./LiveFeed";
 
 type Phase = "flyin" | "pov";
 
@@ -59,10 +60,10 @@ export function DroneReconView({ scenario, onMapFocus, onClose }: DroneReconView
 
       <button
         onClick={onClose}
-        className="pointer-events-auto absolute top-4 right-4 z-[90] p-2 border theme-border theme-bg-panel/85 backdrop-blur-md hover:border-red-500 hover:text-red-500 text-slate-200 transition-all cursor-pointer flex items-center gap-1.5 text-[10px] font-bold font-rajdhani tracking-widest"
+        className="pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 z-[90] px-5 py-2.5 border-2 border-red-600 bg-[rgba(30,5,5,0.92)] backdrop-blur-md hover:bg-red-700 hover:border-red-400 text-red-100 transition-all cursor-pointer flex items-center gap-2 text-[12px] font-bold font-rajdhani tracking-[0.2em] shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:shadow-[0_0_30px_rgba(239,68,68,0.5)]"
         title="Zamknij (Esc)"
       >
-        <X className="w-4 h-4" />
+        <X className="w-5 h-5" />
         ZAKOŃCZ MISJĘ
       </button>
     </div>
@@ -240,25 +241,30 @@ function PovOverlay({ scenario }: { scenario: ReconScenario }) {
       {/* Corner brackets */}
       <CornerBrackets />
 
-      {/* Top-right HUD (REC + timer + battery) */}
-      <div className="absolute top-6 right-32 text-red-200 font-mono text-[10px] leading-relaxed text-right pointer-events-none">
-        <div className="theme-bg-panel/80 backdrop-blur-md border theme-border px-3 py-2 inline-block text-right">
-          <div className="flex items-center justify-end gap-1.5 text-red-400 font-bold">
+      {/* ============ LIVE FEED — right side ============ */}
+      <div className="pointer-events-auto absolute top-14 right-4 bottom-14 w-[420px] max-w-[35vw] flex flex-col overflow-hidden animate-slideIn shadow-2xl border border-[#3a1818]" style={{ animationDelay: '150ms', borderRadius: '2px' }}>
+        {/* Feed takes up all available space */}
+        <div className="flex-1 min-h-0 relative">
+          <LiveFeed scenarioId={scenario.id} />
+        </div>
+        {/* HUD strip below feed */}
+        <div className="shrink-0 bg-[rgba(15,8,8,0.95)] border-t border-[#3a1818] px-3 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            REC {mins}:{secs}
+            <span className="text-[10px] font-mono text-red-400 font-bold">REC {mins}:{secs}</span>
           </div>
-          <div className="theme-text-secondary">BATT 87% • GPS LOCK ✓</div>
-          <div className="text-[9px] theme-neon-text font-rajdhani tracking-widest mt-1">
-            MODE: {scenario.mode}
+          <div className="text-[9px] font-mono text-slate-400">BATT 87% • GPS ✓</div>
+          <div className="text-[9px] theme-neon-text font-rajdhani tracking-widest font-bold">
+            {scenario.mode}
           </div>
         </div>
       </div>
 
-      {/* Center crosshair */}
+      {/* Center crosshair — on the map behind */}
       <Crosshair />
 
-      {/* CV banner */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[140px] pointer-events-none">
+      {/* CV banner — repositioned above crosshair */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[140px] pointer-events-none" style={{ marginLeft: '-12%' }}>
         <div className="flex items-center gap-2 px-3 py-1.5 border theme-neon-border backdrop-blur-sm text-[10px] font-bold font-rajdhani tracking-widest theme-neon-text shadow-[0_0_15px_rgba(239,68,68,0.5)]" style={{ background: "rgba(8, 0, 0, 0.85)" }}>
           <Activity className="w-3.5 h-3.5 animate-pulse" />
           <span>AI: ANALIZA OBRAZU NA ŻYWO</span>
@@ -298,9 +304,9 @@ function DataCard({ scenario }: { scenario: ReconScenario }) {
       : "text-red-300 border-red-500/60 bg-red-500/10";
 
   return (
-    <div className="pointer-events-auto absolute top-20 left-4 bottom-20 w-[360px] max-w-[28vw] theme-bg-panel/90 backdrop-blur-md border theme-border clip-chamfer shadow-2xl flex flex-col overflow-hidden animate-slideIn">
-      {/* Header */}
-      <div className="px-4 py-3 border-b theme-border">
+    <div className="pointer-events-auto absolute top-14 left-4 bottom-14 w-[360px] max-w-[28vw] bg-[rgba(15,8,8,0.94)] backdrop-blur-md border border-[#3a1818] shadow-2xl flex flex-col overflow-hidden animate-slideIn" style={{ borderRadius: '2px' }}>
+      {/* Header - sticky at top */}
+      <div className="px-4 py-3 border-b theme-border shrink-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[9px] theme-neon-text font-bold font-rajdhani tracking-widest">
             {scenario.droneAgency}
@@ -320,80 +326,83 @@ function DataCard({ scenario }: { scenario: ReconScenario }) {
         </div>
       </div>
 
-      {/* Description */}
-      <div className="px-4 py-3 border-b theme-border">
-        <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-1.5">
-          CO SIĘ DZIEJE
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto terminal-scroll min-h-0">
+        {/* Description */}
+        <div className="px-4 py-3 border-b theme-border">
+          <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-1.5">
+            CO SIĘ DZIEJE
+          </div>
+          <p className="text-[11px] theme-text-secondary leading-relaxed font-mono">
+            {scenario.description}
+          </p>
         </div>
-        <p className="text-[11px] theme-text-secondary leading-relaxed font-mono">
-          {scenario.description}
-        </p>
-      </div>
 
-      {/* PLAN DZIAŁANIA */}
-      <div className="px-4 py-3 border-b theme-border bg-red-500/5">
-        <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2 flex items-center gap-1.5">
-          <CheckCircle2 className="w-3 h-3 theme-neon-text" />
-          PLAN DZIAŁANIA
+        {/* PLAN DZIAŁANIA */}
+        <div className="px-4 py-3 border-b theme-border bg-red-500/5">
+          <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3 h-3 theme-neon-text" />
+            PLAN DZIAŁANIA
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {scenario.plan.map((step, i) => (
+              <PlanStepRow key={step.num} step={step} delayMs={500 + i * 350} />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-1.5">
-          {scenario.plan.map((step, i) => (
-            <PlanStepRow key={step.num} step={step} delayMs={500 + i * 350} />
-          ))}
-        </div>
-      </div>
 
-      {/* Data points */}
-      <div className="px-4 py-3 border-b theme-border">
-        <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2">
-          DANE OPERACYJNE
-        </div>
-        <div className="grid grid-cols-1 gap-1.5">
-          {scenario.dataPoints.map((dp, i) => (
-            <div key={i} className="flex items-baseline justify-between gap-2 text-[10px] border-b border-red-900/30 pb-1">
-              <span className="theme-text-muted font-mono shrink-0">{dp.label}</span>
-              <span className="theme-text-primary font-bold font-sharetech text-right">{dp.value}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Detections */}
-      <div className="px-4 py-3 flex-1 overflow-y-auto terminal-scroll">
-        <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2 flex items-center gap-1.5">
-          <Activity className="w-3 h-3 theme-neon-text animate-pulse" />
-          DETEKCJA CV — OBIEKTY
-        </div>
-        <div className="flex flex-col gap-1.5">
-          {scenario.detections.map((d, i) => {
-            const colorClasses =
-              d.color === "red"
-                ? "border-red-500/60 bg-red-500/10 text-red-300"
-                : d.color === "amber"
-                ? "border-amber-500/60 bg-amber-500/10 text-amber-300"
-                : "border-red-500/60 bg-red-500/10 text-red-300";
-            return (
-              <div
-                key={i}
-                className={`detection-item border px-2.5 py-1.5 ${colorClasses}`}
-                style={{ animationDelay: `${800 + i * 600}ms` }}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-bold font-rajdhani tracking-wider">
-                    {d.label}
-                  </span>
-                  <span className="text-[10px] font-bold font-sharetech tabular-nums">
-                    {d.confidence}%
-                  </span>
-                </div>
-                {d.meta && (
-                  <div className="text-[9px] theme-text-muted font-mono mt-0.5">
-                    {d.meta}
-                  </div>
-                )}
+        {/* Data points */}
+        <div className="px-4 py-3 border-b theme-border">
+          <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2">
+            DANE OPERACYJNE
+          </div>
+          <div className="grid grid-cols-1 gap-1.5">
+            {scenario.dataPoints.map((dp, i) => (
+              <div key={i} className="flex items-baseline justify-between gap-2 text-[10px] border-b border-red-900/30 pb-1">
+                <span className="theme-text-muted font-mono shrink-0">{dp.label}</span>
+                <span className="theme-text-primary font-bold font-sharetech text-right">{dp.value}</span>
               </div>
-            );
-          })}
+            ))}
+          </div>
+        </div>
+
+        {/* Detections */}
+        <div className="px-4 py-3">
+          <div className="text-[8px] theme-text-muted font-bold font-rajdhani tracking-[0.25em] mb-2 flex items-center gap-1.5">
+            <Activity className="w-3 h-3 theme-neon-text animate-pulse" />
+            DETEKCJA CV — OBIEKTY
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {scenario.detections.map((d, i) => {
+              const colorClasses =
+                d.color === "red"
+                  ? "border-red-500/60 bg-red-500/10 text-red-300"
+                  : d.color === "amber"
+                  ? "border-amber-500/60 bg-amber-500/10 text-amber-300"
+                  : "border-red-500/60 bg-red-500/10 text-red-300";
+              return (
+                <div
+                  key={i}
+                  className={`detection-item border px-2.5 py-1.5 ${colorClasses}`}
+                  style={{ animationDelay: `${800 + i * 600}ms` }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold font-rajdhani tracking-wider">
+                      {d.label}
+                    </span>
+                    <span className="text-[10px] font-bold font-sharetech tabular-nums">
+                      {d.confidence}%
+                    </span>
+                  </div>
+                  {d.meta && (
+                    <div className="text-[9px] theme-text-muted font-mono mt-0.5">
+                      {d.meta}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

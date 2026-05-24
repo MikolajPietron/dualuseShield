@@ -11,7 +11,7 @@ interface ReconLauncherProps {
 export function ReconLauncher({ scenarios, onLaunch }: ReconLauncherProps) {
   return (
     <div className="fixed inset-0 z-30 pointer-events-none flex items-center justify-center px-4">
-      <div className="pointer-events-auto flex flex-col items-center gap-6 max-w-4xl w-full">
+      <div className="pointer-events-auto flex flex-col items-center gap-6 max-w-6xl w-full">
         <div className="text-center">
           <div className="text-[10px] theme-text-muted font-bold font-rajdhani tracking-[0.3em] mb-1">
             SKY MARSHAL // STALOWA WOLA
@@ -24,7 +24,7 @@ export function ReconLauncher({ scenarios, onLaunch }: ReconLauncherProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
           {scenarios.map((s, idx) => {
             const Icon = s.icon;
             return (
@@ -34,7 +34,7 @@ export function ReconLauncher({ scenarios, onLaunch }: ReconLauncherProps) {
                 className="group relative theme-bg-panel border theme-border clip-chamfer backdrop-blur-md p-5 text-left shadow-2xl transition-all duration-200 hover:theme-neon-border hover:scale-[1.015] hover:shadow-[0_0_30px_rgba(239,68,68,0.3)] cursor-pointer"
               >
                 <div className="absolute top-2 right-3 text-[8px] theme-text-muted font-mono tracking-wider">
-                  0{idx + 1}/04
+                  0{idx + 1}/0{scenarios.length}
                 </div>
 
                 <div className="flex items-start gap-3">

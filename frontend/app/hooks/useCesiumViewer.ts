@@ -338,6 +338,93 @@ export function useCesiumViewer({
       }
     });
 
+    // ====== AIRSPACE RESTRICTION ZONES ======
+
+    // NOTAM P-23 — HSW protection zone (circle around factory)
+    viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(22.0495, 50.5482),
+      ellipse: {
+        semiMajorAxis: 500,
+        semiMinorAxis: 500,
+        material: Cesium.Color.RED.withAlpha(0.05),
+        outline: true,
+        outlineColor: Cesium.Color.RED.withAlpha(0.4),
+        outlineWidth: 2,
+        height: 0
+      }
+    });
+
+    viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(22.0495, 50.5512, 40),
+      label: {
+        text: "NOTAM P-23 • STREFA ZAKAZANA HSW",
+        font: "bold 28px Rajdhani, sans-serif",
+        fillColor: Cesium.Color.RED.withAlpha(0.8),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 5,
+        scale: 0.28,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY
+      }
+    });
+
+    // U-Space corridor — wider operational area
+    viewer.entities.add({
+      rectangle: {
+        coordinates: Cesium.Rectangle.fromDegrees(21.98, 50.50, 22.12, 50.62),
+        material: Cesium.Color.fromCssColorString("#7c3aed").withAlpha(0.015),
+        outline: true,
+        outlineColor: Cesium.Color.fromCssColorString("#7c3aed").withAlpha(0.2),
+        outlineWidth: 1,
+        height: 0
+      }
+    });
+
+    viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(21.98, 50.62, 30),
+      label: {
+        text: "U-SPACE • MAX 120m AGL • LTE-A",
+        font: "bold 26px JetBrains Mono, monospace",
+        fillColor: Cesium.Color.fromCssColorString("#7c3aed"),
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 4,
+        scale: 0.28,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY
+      }
+    });
+
+    // Drone base positions (small green markers)
+    const bases = [
+      { lon: 22.0524, lat: 50.5701, label: "BAZA ZK" },
+      { lon: 22.0420, lat: 50.5710, label: "BAZA POLICJI" },
+      { lon: 22.0555, lat: 50.5605, label: "BAZA PSP" },
+    ];
+    bases.forEach((base) => {
+      viewer.entities.add({
+        position: Cesium.Cartesian3.fromDegrees(base.lon, base.lat),
+        point: {
+          pixelSize: 7,
+          color: Cesium.Color.fromCssColorString("#22c55e"),
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
+        },
+        label: {
+          text: base.label,
+          font: "bold 24px Share Tech Mono, monospace",
+          fillColor: Cesium.Color.fromCssColorString("#22c55e"),
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 4,
+          scale: 0.25,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -12),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
+        }
+      });
+    });
+
     setIsCesiumLoaded(true);
 
     return () => {
