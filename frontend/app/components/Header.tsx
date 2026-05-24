@@ -28,11 +28,11 @@ export function Header({ clockTime, onFleet, onSources }: HeaderProps) {
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 font-mono">
+      <div className="flex items-center gap-1.5 font-mono">
         {onFleet && (
           <button
             onClick={onFleet}
-            className="flex items-center gap-1.5 text-[9px] font-bold font-rajdhani tracking-widest px-2.5 py-1.5 border theme-border theme-text-secondary hover:theme-neon-border hover:theme-neon-text transition-all cursor-pointer bg-transparent"
+            className="flex items-center gap-1.5 text-[9px] font-bold font-rajdhani tracking-widest px-3 py-1.5 border theme-border theme-text-secondary hover:theme-neon-border hover:theme-neon-text transition-all cursor-pointer bg-transparent"
           >
             <Plane className="w-3 h-3" />
             FLOTA
@@ -41,13 +41,14 @@ export function Header({ clockTime, onFleet, onSources }: HeaderProps) {
         {onSources && (
           <button
             onClick={onSources}
-            className="flex items-center gap-1.5 text-[9px] font-bold font-rajdhani tracking-widest px-2.5 py-1.5 border theme-border theme-text-secondary hover:theme-neon-border hover:theme-neon-text transition-all cursor-pointer bg-transparent"
+            className="flex items-center gap-1.5 text-[9px] font-bold font-rajdhani tracking-widest px-3 py-1.5 border theme-border theme-text-secondary hover:theme-neon-border hover:theme-neon-text transition-all cursor-pointer bg-transparent"
           >
             <Database className="w-3 h-3" />
             ŹRÓDŁA
           </button>
         )}
-        <div className="text-[11px] theme-text-secondary tabular-nums border-l theme-border pl-4 h-12 flex items-center">
+        <div className="w-px h-6 bg-[#3a1818] ml-1.5" />
+        <div className="text-[11px] theme-text-secondary tabular-nums pl-3 h-12 flex items-center font-rajdhani font-bold tracking-wider">
           {clockTime || "--:--:--"} UTC
         </div>
       </div>

@@ -92,6 +92,93 @@ export function LiveFeed({ scenarioId }: LiveFeedProps) {
     dualuse: "DRON POLICJI • RF + EO/IR",
   };
 
+  // For police chase, use real YouTube drone footage
+  if (scenarioId === "procedury") {
+    return (
+      <div className="relative w-full h-full overflow-hidden bg-black">
+        {/* YouTube embed — autoplay, muted, loop, no controls */}
+        <div className="absolute inset-0">
+          <iframe
+            src="https://www.youtube.com/embed/_XedA4_8k5s?autoplay=1&mute=1&loop=1&playlist=_XedA4_8k5s&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&start=30"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+            style={{
+              width: "180%",
+              height: "180%",
+              border: "none",
+            }}
+            allow="autoplay; encrypted-media"
+            allowFullScreen={false}
+          />
+        </div>
+
+        {/* Night vision / drone cam overlay effect */}
+        <div className="absolute inset-0 pointer-events-none z-[2]" style={{
+          background: "linear-gradient(180deg, rgba(0,20,0,0.15) 0%, transparent 30%, transparent 70%, rgba(0,20,0,0.15) 100%)",
+          mixBlendMode: "multiply",
+        }} />
+
+        {/* Scan lines */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[3]"
+          style={{
+            backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, transparent 1px, transparent 3px)",
+            backgroundSize: "100% 3px",
+          }}
+        />
+
+        {/* Vignette */}
+        <div className="absolute inset-0 pointer-events-none z-[3]" style={{
+          background: "radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%)",
+        }} />
+
+        {/* Corner ticks */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-[4]" preserveAspectRatio="none">
+          <line x1="3%" y1="3%" x2="8%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="3%" x2="3%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="3%" x2="97%" y2="3%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="3%" x2="97%" y2="8%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="3%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="3%" y1="97%" x2="8%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="97%" y1="97%" x2="97%" y2="92%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+          <line x1="92%" y1="97%" x2="97%" y2="97%" stroke="rgba(239,68,68,0.6)" strokeWidth="1.5" />
+        </svg>
+
+        {/* AI tracking box overlay */}
+        <div className="absolute z-[4] pointer-events-none" style={{ top: "35%", left: "40%", width: "20%", height: "25%" }}>
+          <div className="w-full h-full border border-red-500/70 animate-pulse" style={{ boxShadow: "0 0 8px rgba(239,68,68,0.3)" }}>
+            <div className="absolute -top-3 left-0 text-[7px] font-mono text-red-400 font-bold">
+              ◆ TARGET • AI TRACKING
+            </div>
+            <div className="absolute -bottom-3 right-0 text-[6px] font-mono text-red-400/70">
+              CONF: 94% • v=78 km/h
+            </div>
+          </div>
+        </div>
+
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-1.5 bg-black/70 backdrop-blur-sm border-b border-red-900/50 z-10">
+          <div className="flex items-center gap-2">
+            <Video className="w-3 h-3 text-red-500" />
+            <span className="text-[9px] font-rajdhani font-bold tracking-widest text-red-400">
+              LIVE FEED
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Signal className="w-3 h-3 text-green-400" />
+            <span className="text-[8px] font-mono text-slate-400">
+              {feedLabels[scenarioId]}
+            </span>
+          </div>
+        </div>
+        {/* Bottom info bar */}
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-1 bg-black/70 backdrop-blur-sm border-t border-red-900/50 z-10">
+          <LiveTimestamp />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full overflow-hidden bg-black">
       <canvas

@@ -12,7 +12,7 @@ export function SystemStatusBar() {
   return (
     <div className="fixed top-12 left-0 w-full z-[50] border-b theme-border bg-[rgba(8,4,4,0.92)] backdrop-blur-md">
       {/* Status ticker */}
-      <div className="flex items-center h-8 px-4 gap-6 text-[9px] font-mono overflow-hidden">
+      <div className="flex items-center justify-between h-8 px-4 text-[9px] font-mono overflow-hidden">
         {/* Drone status */}
         <div className="flex items-center gap-1.5 shrink-0">
           <Plane className="w-3 h-3 theme-neon-text" />
