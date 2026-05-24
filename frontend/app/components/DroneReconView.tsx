@@ -130,7 +130,7 @@ function FlyInScene({
 
 function HoveringDrone() {
   const ref = useRef<THREE.Group>(null);
-  const { scene } = useGLTF("/3d_models/fpv_drone.glb");
+  const { scene } = useGLTF("/3d_models/drone_design.glb");
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
@@ -507,4 +507,4 @@ function PlanStepRow({ step, delayMs }: { step: ResolutionStep; delayMs: number 
   );
 }
 
-useGLTF.preload("/3d_models/fpv_drone.glb");
+useGLTF.preload("/3d_models/drone_design.glb");
